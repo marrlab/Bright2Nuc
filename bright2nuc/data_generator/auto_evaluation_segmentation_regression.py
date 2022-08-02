@@ -20,18 +20,26 @@ from skimage import filters
 import datetime
 
 def threshold(img):
-    img[img < np.mean(img)] = 0
+    """
+    #TODO
+    :param img (tensor): image to be thresholded
+    """
+    img[img < np.mean(img)] = 0.
     return img
 
 def binarize(data):
+    """
+    #TODO
+    :param data: data to be binarized
+    """
     threshold = filters.threshold_otsu(data)
-    data[data <= threshold] = 0
-    data[data > threshold] = 1
+    data[data <= threshold] = 0.
+    data[data > threshold] = 1.
     return data
 
 def normalize(data):
 	'''
-	:param data: data to be normalized0
+	:param data: data to be normalized 0
 	:return: normalize data between 0 and 1
 	'''
 	mindata = np.min(data)
@@ -42,6 +50,7 @@ def normalize(data):
 
 def auc_(pred, gt):
     '''
+    # TODO: order of the input
     :param data: groundtruth and prediction
     :return: Area under curve
     '''
@@ -53,6 +62,7 @@ def auc_(pred, gt):
 
 def getPearson(gt, pred):
     '''
+    # TODO: order of the input
     :param data: groundtruth and prediction
     :return: pearson correlation
     '''
@@ -69,7 +79,8 @@ def save_2Dimages(data, names, z_index, path_name, image_name):
     logging.info("plot len data")
     logging.info(len(data))
     plt.figure(figsize = (len(data)*8,10))
-    grid = plt.GridSpec(4, len(data), height_ratios=[0.01,0.3,0.02,0.01], width_ratios=len(data) * [1])
+    grid = plt.GridSpec(4, len(data), height_ratios=[0.01,0.3,0.02,0.01], \
+                                            width_ratios=len(data) * [1])
     logging.info("shape data save")
     logging.info(np.shape(data))
     for img, image in enumerate(data):
@@ -203,19 +214,22 @@ def save_3Dimages(data, names, z_index, path_name, image_name):
 
 
 def quantitative_evaluation(path, data, names):
-    groundtruth_norm = (data[names.index("groundtruth")] - np.min(data[names.index("groundtruth")])) / \
-                       (np.max(data[names.index("groundtruth")]) - np.min(data[names.index("groundtruth")]))
-    prediction_norm = (data[names.index("prediction")] - np.min(data[names.index("prediction")])) / \
-                      (np.max(data[names.index("prediction")]) - np.min(data[names.index("prediction")]))
-    rel_errormap_norm = np.abs(np.divide(data[names.index("abs_errormap")],
-                                         groundtruth_norm,
-                                         out=np.zeros_like(data[names.index("abs_errormap")]),
-                                         where=groundtruth_norm != 0))
+    """
+    #TODO: documentation and correction of the commented codes
+    """
+    # groundtruth_norm = (data[names.index("groundtruth")] - np.min(data[names.index("groundtruth")])) / \
+    #                    (np.max(data[names.index("groundtruth")]) - np.min(data[names.index("groundtruth")]))
+    # prediction_norm = (data[names.index("prediction")] - np.min(data[names.index("prediction")])) / \
+    #                   (np.max(data[names.index("prediction")]) - np.min(data[names.index("prediction")]))
+    # rel_errormap_norm = np.abs(np.divide(data[names.index("abs_errormap")],
+    #                                      groundtruth_norm,
+    #                                      out=np.zeros_like(data[names.index("abs_errormap")]),
+    #                                      where=groundtruth_norm != 0))
 
     groundtruth_binary = binarize(data[names.index("groundtruth")])
     prediction_binary = binarize(data[names.index("prediction")])
-    groundtruth_norm = normalize(data[names.index("groundtruth")])
-    prediction_norm = normalize(data[names.index("prediction")])
+    # groundtruth_norm = normalize(data[names.index("groundtruth")])
+    # prediction_norm = normalize(data[names.index("prediction")])
     Pearson, Pearson_all = getPearson(data[names.index("prediction")], data[names.index("groundtruth")])
 
     logging.info("Metriccs:")
@@ -232,9 +246,13 @@ def quantitative_evaluation(path, data, names):
     f.close()
 
 def visual_assesment(path, data, names):
+    '''
+    #TODO: explain the inputs
+    Function to execute image generation and saving
+    '''
+
     image_names = np.load(path + "/insights/image_names.npy")
 
-    '''Function to execute image generation and saving'''
     os.makedirs(path + "/evaluation/", exist_ok=True)
 
     # Threshold the uncertainty map to obtain more meaningful images
@@ -249,7 +267,7 @@ def visual_assesment(path, data, names):
                 logging.info(np.shape(image))
                 data[index, ...] = normalize(data[index, ...])
 
-    names_out = copy.deepcopy(names)
+    #names_out = copy.deepcopy(names)
     report_dir = path + "/evaluation/"
     logging.info("Length of data")
     logging.info(len(data))
@@ -272,6 +290,9 @@ def visual_assesment(path, data, names):
 
 
 def segmentation_regression_evaluation(path):
+    '''
+    #TODO: explain the inputs
+    '''
     savepath = path + "/insights/"
     max_images = 200000
     prepare_data_for_evaluation(path, max_images)
