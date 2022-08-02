@@ -1,5 +1,5 @@
 from bright2nuc.utils import *
-from bright2nuc.segmentation.Regression import Regression
+from bright2nuc.segmentation.regression import Regression
 
 def GetPipeLine(configs, random_state=123):
     if "seeds" in configs:
