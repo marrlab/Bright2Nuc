@@ -70,8 +70,8 @@ class UNetBuilder(object):
       conv5 = LeakyReLU(alpha=0.2)(conv5)
       drop5 = Dropout(rate=0.3)(conv5, training = Dropout_On)
       up6 = Conv3DTranspose(base_n_filters * 8, (2, 3, 3), strides=(1, 2, 2), activation='relu', padding='same')(drop5)
-      #up6 = Conv3D(base_n_filters * 8, (2,3,3), padding='same', kernel_initializer='he_normal')(
-      #   UpSampling3D(size=(1, 2, 2))(drop5))
+
+
       merge6 = concatenate([drop4, up6], axis=4)
       conv6 = Conv3D(base_n_filters * 8, (2,3,3), activation='relu', padding='same', kernel_initializer='he_normal')(merge6)
       conv6 = BatchNormalization()(conv6)
@@ -82,8 +82,7 @@ class UNetBuilder(object):
 
       up7 = Conv3DTranspose(base_n_filters * 4, (2, 3, 3), strides=(1, 2, 2), activation='relu', padding='same')(
          conv6)
-      #up7 = Conv3D(base_n_filters * 4, (2,3,3), padding='same', kernel_initializer='he_normal')(
-      #    UpSampling3D(size=(1, 2, 2))(conv6))
+         
       merge7 = concatenate([drop3, up7], axis=4)
       conv7 = Conv3D(base_n_filters * 4, (2,3,3), padding='same', kernel_initializer='he_normal')(merge7)
       conv7 = BatchNormalization()(conv7)
@@ -94,8 +93,8 @@ class UNetBuilder(object):
 
       up8 = Conv3DTranspose(base_n_filters * 2, (2, 3, 3), strides=(1, 2, 2), activation='relu', padding='same')(
          conv7)
-      #up8 = Conv3D(base_n_filters * 2, (2,3,3), padding='same', kernel_initializer='he_normal')(
-      #    UpSampling3D(size=(1, 2, 2))(conv7))
+
+
       merge8 = concatenate([drop2, up8], axis=4)
       conv8 = Conv3D(base_n_filters * 2, (2,3,3), padding='same', kernel_initializer='he_normal')(merge8)
       conv8 = BatchNormalization()(conv8)
@@ -106,8 +105,8 @@ class UNetBuilder(object):
 
       up9 = Conv3DTranspose(base_n_filters, (2, 3, 3), strides=(1, 2, 2), activation='relu', padding='same')(
          conv8)
-      #up9 = Conv3D(base_n_filters, (2,3,3), padding='same', kernel_initializer='he_normal')(
-      #    UpSampling3D(size=(1, 2, 2))(conv8))
+
+
       merge9 = concatenate([drop1, up9], axis=4)
       conv9 = Conv3D(base_n_filters, (2,3,3), padding='same', kernel_initializer='he_normal')(merge9)
       conv9 = BatchNormalization()(conv9)
