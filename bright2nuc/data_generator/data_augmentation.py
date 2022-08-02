@@ -45,23 +45,10 @@ def data_augentation(X, Y, data_gen_args, data_path_file_name):
         """
         if data_gen_args["rotation_range"] > 0 and random.choice([True, False]) == True:
             angle =  np.random.choice(int(data_gen_args["rotation_range"]*100))/100
-            #print("rotation", np.shape(X), np.shape(Y))
-
+            
             X = np.nan_to_num(rotate(X, angle, mode='nearest', axes=(1,2), reshape=False))
             Y = np.nan_to_num(rotate(Y, angle, mode='nearest', axes=(1,2), reshape=False))
 
-            # Zoom so that there are no empty edges
-            '''shape_X = np.shape(X)
-            shape_Y = np.shape(Y)
-            length_X = np.max(shape_X)
-            zoom_length_X = length_X / (np.cos(math.radians(angle)) + np.sin(math.radians(angle)))
-            zoom_length_Y = length_X / (np.cos(math.radians(angle)) + np.sin(math.radians(angle)))
-            X = X[..., int((length_X - zoom_length_X) / 2) : int(length_X -  ((length_X - zoom_length_X) / 2)), 
-            int((length_X - zoom_length_X) / 2) : int(length_X - ((length_X - zoom_length_X) / 2)), :]
-            X = np.nan_to_num(sk.transform.resize(X, shape_X, preserve_range = True))
-            Y = Y[..., int((length_X - zoom_length_Y) / 2) : int(length_X -  ((length_X - zoom_length_Y) / 2)), 
-            int((length_X - zoom_length_Y) / 2) : int(length_X - ((length_X - zoom_length_Y) / 2)), :]
-            Y = np.nan_to_num(sk.transform.resize(Y, shape_Y, preserve_range = True))'''
 
 
     if "width_shift_range" in data_gen_args and data_gen_args["vertical_flip"] != False:
