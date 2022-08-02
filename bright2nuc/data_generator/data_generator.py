@@ -10,39 +10,39 @@ from skimage.io import imread
 from skimage.transform import resize
 from bright2nuc.data_generator.data_augmentation import data_augentation
 import os
-import csv as csv
-import sys
 import copy
-import glob
 import logging
 from keras.utils import to_categorical
 from skimage.color import gray2rgb
-import warnings
 import math
 import random
 
 def reshape_to_nuclei_size(data, resize_factor):
+    """
+    #TODO: documentation
+    This function reshapes the data to the nuclei size
+    """
     data_shape = np.shape(data)
     return resize(data, (data_shape[0], int(data_shape[1]*resize_factor), int(data_shape[2]*resize_factor)
                          , data_shape[3]), preserve_range=True)
 
-def pad(data_x, data_y):
-    padded_x = np.zeros((np.shape(data_x)[0],384,384, np.shape(data_x)[3]))
+def pad(data_x, data_y, image_size = 384):
+    padded_x = np.zeros((np.shape(data_x)[0],image_size,image_size, np.shape(data_x)[3]))
     padded_x[0:np.shape(data_x)[0], 0:np.shape(data_x)[1], 0:np.shape(data_x)[2], 0:np.shape(data_x)[3]] = data_x
-    padded_y = np.zeros((np.shape(data_y)[0],384,384, np.shape(data_y)[3]))
+    padded_y = np.zeros((np.shape(data_y)[0],image_size,image_size, np.shape(data_y)[3]))
     padded_y[0:np.shape(data_y)[0], 0:np.shape(data_y)[1], 0:np.shape(data_y)[2], 0:np.shape(data_y)[3]] = data_y
     return padded_x, padded_y
 
-def crop_pad(data_x, data_y):
-    if np.shape(data_x)[2] > 384:#512:
-        x = random.randint(0, data_x.shape[2] - 384)
-        data_x = data_x[:, :, x:x + 384, :]
-        data_y = data_y[:, :, x:x + 384, :]
-    if np.shape(data_x)[1] > 384:#512:
-        y = random.randint(0, data_x.shape[1] - 384)
-        data_x = data_x[:, y:y + 384, :, :]
-        data_y = data_y[:, y:y + 384, :, :]
-    if np.shape(data_x)[1] == np.shape(data_x)[2] == 384:#512:
+def crop_pad(data_x, data_y, image_size = 384):
+    if np.shape(data_x)[2] > image_size:#512:
+        x = random.randint(0, data_x.shape[2] - image_size)
+        data_x = data_x[:, :, x:x + image_size, :]
+        data_y = data_y[:, :, x:x + image_size, :]
+    if np.shape(data_x)[1] > image_size:#512:
+        y = random.randint(0, data_x.shape[1] - image_size)
+        data_x = data_x[:, y:y + image_size, :, :]
+        data_y = data_y[:, y:y + image_size, :, :]
+    if np.shape(data_x)[1] == np.shape(data_x)[2] == image_size:#512:
         return data_x, data_y
     else:
         data_x, data_y = pad(data_x, data_y)
@@ -201,8 +201,7 @@ def training_data_generator(Training_Input_shapes, batchsize, num_channels,
                 if z % batchsize == 0:
                     X_train = np.array(X_train)
                     Y_train = np.array(Y_train)
-                    #print(np.shape(X_train), np.min(X_train), np.max(X_train))
-                    #print(np.shape(Y_train), np.min(Y_train), np.max(Y_train))
+                    
                     yield (X_train, Y_train)
                     X_train = []
                     Y_train = []
@@ -221,7 +220,6 @@ def testGenerator(Input_image_shape, path, num_channels, test_image_files, resiz
         X: one image on which a model prediction is executed
     '''
     test_path = path + "/test/"
-    batchsize = 1
     min_img, max_img = get_min_max(test_path, "/image/", test_image_files)
     while True:
         for i, test_image_file in enumerate(test_image_files):
@@ -268,7 +266,6 @@ def saveResult(path, test_image_files, results, Input_image_shape, resize_factor
     results_path = path + "/results/"
     results = results * 255
     os.makedirs(path, exist_ok=True)
-    z_stepsize = int(np.shape(results)[0] / len(test_image_files))
     z_steps = []
     shapes = []
     for test_file in test_image_files:
@@ -320,7 +317,7 @@ def training_validation_data_split(data_path):
     return train_image_files, val_image_files
 
 
-def get_input_image_sizes(iterations_over_dataset, path):
+def get_input_image_sizes(iterations_over_dataset, path, mode_number = 16):
     '''
     Get the size of the input images and check dimensions
 
@@ -344,15 +341,15 @@ def get_input_image_sizes(iterations_over_dataset, path):
         Training_Input_shape = copy.deepcopy(Input_image_shape)
         logging.info("Input_image_shape %s" % Input_image_shape)
         if len(Input_image_shape) == 3:
-            if any([int(Input_image_shape[1]) % 16 != 0, int(Input_image_shape[2]) % 16 != 0]):
+            if any([int(Input_image_shape[1]) % mode_number != 0, int(Input_image_shape[2]) % mode_number != 0]):
                 print("The Input data needs to have a multiple of 16 as pixel dimension")
-                Training_Input_shape[1] = math.ceil(Training_Input_shape[1] / 16) * 16
-                Training_Input_shape[2] = math.ceil(Training_Input_shape[2] / 16) * 16
+                Training_Input_shape[1] = math.ceil(Training_Input_shape[1] / mode_number) * mode_number
+                Training_Input_shape[2] = math.ceil(Training_Input_shape[2] / mode_number) * mode_number
         elif len(Input_image_shape) == 2:
-            if any([int(Input_image_shape[0]) % 16 != 0, int(Input_image_shape[1]) % 16 != 0]):
+            if any([int(Input_image_shape[0]) % mode_number != 0, int(Input_image_shape[1]) % mode_number != 0]):
                 print("The Input data needs to have a multiple of 16 as pixel dimension")
-                Training_Input_shape[0] = math.ceil(Training_Input_shape[0] / 16)*16
-                Training_Input_shape[1] = math.ceil(Training_Input_shape[1] / 16)*16
+                Training_Input_shape[0] = math.ceil(Training_Input_shape[0] / mode_number)*mode_number
+                Training_Input_shape[1] = math.ceil(Training_Input_shape[1] / mode_number)*mode_number
 
         # If has an alpha channel, remove it for consistency
 
