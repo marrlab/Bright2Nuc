@@ -10,7 +10,7 @@ Bright2Nuc enables experts and non-experts to predict nuclei from 2D and 3D brig
 
 ## Documentation
 
-For documentation please refere to [docs](docs)
+For documentation please refer to [docs](docs) as well as [bright2nuc](bright2nuc) for running the code.
 
 ## Contributing
 
@@ -21,5 +21,5 @@ We are happy about any contributions. For any suggested changes, please send a p
 If you use Bright2Nuc, please cite this preprint:
 
 ```
-
+TO BE UPDATED
 ```
