@@ -9,7 +9,7 @@ import os
 import json
 from bright2nuc.data_generator.data_generator import *
 from bright2nuc.data_generator.auto_evaluation_segmentation_regression import segmentation_regression_evaluation
-from bright2nuc.segmentation.UNet_models import UNetBuilder
+from bright2nuc.segmentation.unet_models import UNetBuilder
 from keras.callbacks import ModelCheckpoint, TensorBoard, EarlyStopping
 import time
 import tensorflow as tf

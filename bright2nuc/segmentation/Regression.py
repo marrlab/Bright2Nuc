@@ -6,7 +6,7 @@ In this file the functions are started to train and test the networks
 '''
 
 from bright2nuc.utils import *
-from bright2nuc.segmentation.UNet_models import UNetBuilder
+from bright2nuc.segmentation.unet_models import UNetBuilder
 
 class Regression(object):
     def __init__(   self,

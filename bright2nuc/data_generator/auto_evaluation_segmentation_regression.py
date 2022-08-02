@@ -15,7 +15,7 @@ from skimage.color import rgb2gray, gray2rgb
 import logging
 from sklearn.metrics import jaccard_score
 from sklearn.metrics import roc_curve, auc
-from bright2nuc.evaluation.Utils_data_evaluation import prepare_data_for_evaluation
+from bright2nuc.evaluation.utils_data_evaluation import prepare_data_for_evaluation
 from skimage import filters
 import datetime
 
