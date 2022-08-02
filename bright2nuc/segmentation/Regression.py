@@ -10,7 +10,7 @@ from bright2nuc.segmentation.unet_models import UNetBuilder
 
 class Regression(object):
     def __init__(   self,
-                    use_algorithm,
+                    use_algorithm, # todo: it is not used!
                     path,
                     pretrained_weights = None,
                     batchsize = 2,
@@ -20,11 +20,11 @@ class Regression(object):
                     num_classes = 1,
                     nuclei_size = 30,
                     image_size = None,
-                    seeds=False,
+                    seeds=False,  # todo: it is not used!
                     calculate_uncertainty = False,
                     evaluation = False):
 
-        self.use_algorithm = "Regression"
+        self.use_algorithm = "Regression" # todo: correct this
         self.path = path
         self.pretrained_weights = pretrained_weights
         self.batchsize = batchsize
@@ -34,6 +34,7 @@ class Regression(object):
         self.image_size = image_size
         self.calculate_uncertainty = calculate_uncertainty
         self.nuclei_size = nuclei_size
+        # add a comment what 30 is
         if self.nuclei_size != 30:
             self.resize_factor = 30./nuclei_size
         else:
@@ -56,7 +57,7 @@ class Regression(object):
         else:
             Training_Input_shapes = self.image_size
             num_channels = int(self.image_size[-1])
-            data_path = self.path + '/train'
+            data_path = self.path + '/train/'
 
 
 
@@ -70,7 +71,7 @@ class Regression(object):
         Import filenames and split them into train and validation set according to 
         the variable -validation_split = 20%
         '''
-        data_path = self.path + '/train'
+        data_path = self.path + '/train/'
         train_image_files, val_image_files = training_validation_data_split(data_path)
 
         steps_per_epoch = np.sum(Training_Input_shapes, axis = 0)[0]
@@ -82,7 +83,7 @@ class Regression(object):
 
 
 
-    def data_generator(self, data_path, Training_Input_shapes, num_channels, train_image_files, val_image_files):
+    def data_generator(self, data_path, training_Input_shapes, num_channels, train_image_files, val_image_files):
         '''
         Prepare data as a Training and Validation set
         Args:
@@ -103,14 +104,14 @@ class Regression(object):
         if all([num_channels_label != 1, num_channels_label != 3]):
             num_channels_label = 1
 
-        TrainingDataGenerator = training_data_generator(Training_Input_shapes,
+        TrainingDataGenerator = training_data_generator(training_Input_shapes,
                                                             self.batchsize, num_channels,
                                                             num_channels_label,
                                                             train_image_files,
                                                             self.data_gen_args,
                                                             data_path,
                                                             self.resize_factor)
-        ValidationDataGenerator = training_data_generator(Training_Input_shapes,
+        ValidationDataGenerator = training_data_generator(training_Input_shapes,
                                                               self.batchsize, num_channels,
                                                               num_channels_label,
                                                               val_image_files,
@@ -156,11 +157,11 @@ class Regression(object):
 
         early_stopping = EarlyStopping(monitor='val_loss', patience=15, mode='auto', verbose=0)
         datasetname = self.path.rsplit("/",1)[1]
-        checkpoint_filepath = (self.path + "/logs" + "/pretrained_weights" + datasetname + ".hdf5") #.{epoch:02d}.hdf5")
+        checkpoint_filepath = (self.path + "/logs" + "/pretrained_weights" + datasetname + ".hdf5") 
         os.makedirs((self.path + "/logs"), exist_ok=True)
         model_checkpoint = ModelCheckpoint(checkpoint_filepath, monitor=('val_loss'), verbose=1, save_best_only=True)
 
-        tensorboard = TensorBoard(log_dir = self.path + "logs/" + "/" + format(time.time())) #, update_freq='batch')
+        tensorboard = TensorBoard(log_dir = self.path + "logs/" + "/" + format(time.time())) 
         logging.info("Tensorboard log is created at: logs/  it can be opend using tensorboard "
                      "--logdir=logs for a terminal in the Project folder")
         callbacks_list = [model_checkpoint, tensorboard, early_stopping]
@@ -190,7 +191,7 @@ class Regression(object):
         returns: the results of the tested images, a list of filenames of the testset, the number of images tested
         '''
         test_image_files = os.listdir(os.path.join(self.path + "/test/image"))
-        num_test_img = int(len(os.listdir(self.path + "/test/image")))
+        num_test_img = int(len(os.listdir(self.path + "/test/image"))) # TODO: check if needed
 
         '''
         Initialize the testset generator
@@ -212,9 +213,9 @@ class Regression(object):
             segmentation_regression_evaluation(self.path)
 
     def run(self):
-        Input_image_shape = tuple((3, None, None, 1))  # data_prepration_results[3]
+        Input_image_shape = tuple((3, None, None, 1))  
         data_prepration_results = self.data_prepration()
-        nuclei_size = self.nuclei_size
+        #nuclei_size = self.nuclei_size # TODO: check if needed
         Training_Input_shapes = data_prepration_results[0]
         num_channels = data_prepration_results[1]
         data_path = data_prepration_results[2]
@@ -222,7 +223,7 @@ class Regression(object):
         val_image_files = data_prepration_results[4]
         steps_per_epoch = data_prepration_results[5]
         if self.iterations_over_dataset != 0:
-            TrainingDataGenerator, ValidationDataGenerator, num_channels_label = self.data_generator(data_path,
+            TrainingDataGenerator, ValidationDataGenerator, _ = self.data_generator(data_path,
                                                                                 Training_Input_shapes,
                                                                                 num_channels,
                                                                                 train_image_files,
@@ -230,11 +231,11 @@ class Regression(object):
 
         model = self.load_model()
         if self.iterations_over_dataset != 0:
-            model, checkpoint_filepath = self.train_model(  model,
-                                                            TrainingDataGenerator,
-                                                            ValidationDataGenerator ,
-                                                            steps_per_epoch,
-                                                            val_image_files  )
+            model, _ = self.train_model(    model,
+                                            TrainingDataGenerator,
+                                            ValidationDataGenerator ,
+                                            steps_per_epoch,
+                                            val_image_files  )
 
         self.test_set_evaluation( model,
                                         Training_Input_shapes,
