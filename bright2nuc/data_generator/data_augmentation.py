@@ -1,5 +1,5 @@
 '''
-InstantDL
+Bright2Nuc
 Data augmentations which can be executed on the fly
 Written by Dominik Waibel
 '''
@@ -228,12 +228,10 @@ def data_augentation(X, Y, data_gen_args, data_path_file_name):
         data_path, file_name = os.path.split(data_path_file_name)
         Aug_path = (data_path + '/Augmentations/' )
         os.makedirs(Aug_path, exist_ok=True)
-        #TODO: Check if the folder and saving really works with the path
         if len(np.shape(X)) == 5:
             plot2images(X[0, 10, ... ,0], Y[0, 10, :, :,0], Aug_path, file_name)
         elif len(np.shape(X)) == 4 and np.shape(X)[-1] == 3:
             plot2images(X[0, ...], Y[0,...], Aug_path, file_name)
         elif len(np.shape(X)) == 4 and np.shape(X)[-1] == 1:
             plot2images(X[0, ..., 0], Y[0, :, :, 0], Aug_path, file_name)
-    #logging.info("Augmented Dimensions:", np.shape(X), np.shape(Y))
     return X, Y

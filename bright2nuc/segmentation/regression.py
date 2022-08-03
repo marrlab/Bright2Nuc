@@ -1,5 +1,5 @@
 '''
-InstantDL
+Bright2Nuc
 Written by Dominik Waibel and Ali Boushehri
 
 In this file the functions are started to train and test the networks
@@ -10,7 +10,6 @@ from bright2nuc.segmentation.unet_models import UNetBuilder
 
 class Regression(object):
     def __init__(   self,
-                    use_algorithm, # todo: it is not used!
                     path,
                     pretrained_weights = None,
                     batchsize = 2,
@@ -20,11 +19,11 @@ class Regression(object):
                     num_classes = 1,
                     nuclei_size = 30,
                     image_size = None,
-                    seeds=False,  # todo: it is not used!
                     calculate_uncertainty = False,
-                    evaluation = False):
+                    evaluation = False,
+                    use_algorithm = "Regression"):
 
-        self.use_algorithm = "Regression" # todo: correct this
+        self.use_algorithm = use_algorithm
         self.path = path
         self.pretrained_weights = pretrained_weights
         self.batchsize = batchsize
@@ -191,8 +190,6 @@ class Regression(object):
         returns: the results of the tested images, a list of filenames of the testset, the number of images tested
         '''
         test_image_files = os.listdir(os.path.join(self.path + "/test/image"))
-        num_test_img = int(len(os.listdir(self.path + "/test/image"))) # TODO: check if needed
-
         '''
         Initialize the testset generator
         '''
@@ -215,7 +212,6 @@ class Regression(object):
     def run(self):
         Input_image_shape = tuple((3, None, None, 1))  
         data_prepration_results = self.data_prepration()
-        #nuclei_size = self.nuclei_size # TODO: check if needed
         Training_Input_shapes = data_prepration_results[0]
         num_channels = data_prepration_results[1]
         data_path = data_prepration_results[2]

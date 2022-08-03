@@ -1,4 +1,5 @@
 '''
+Bright2Nuc
 Author: Dominik Waibel
 
 This file contains the functions with which the data is improted and exported before training and testing and after testing.
@@ -19,14 +20,21 @@ import random
 
 def reshape_to_nuclei_size(data, resize_factor):
     """
-    #TODO: documentation
-    This function reshapes the data to the nuclei size
+    # Arguments
+        data: tensor or numpy array
+        resize_factor: float by which the array should be resized
+    :param data (tensor): data to be reshaped
     """
     data_shape = np.shape(data)
     return resize(data, (data_shape[0], int(data_shape[1]*resize_factor), int(data_shape[2]*resize_factor)
                          , data_shape[3]), preserve_range=True)
 
 def pad(data_x, data_y, image_size = 384):
+    """
+        # Arguments
+            data_x, data_y: tensor or numpy array
+        :param pad data with zeros if input data is too small to enforce that input data equally sized (384x384 pixels)
+        """
     padded_x = np.zeros((np.shape(data_x)[0],image_size,image_size, np.shape(data_x)[3]))
     padded_x[0:np.shape(data_x)[0], 0:np.shape(data_x)[1], 0:np.shape(data_x)[2], 0:np.shape(data_x)[3]] = data_x
     padded_y = np.zeros((np.shape(data_y)[0],image_size,image_size, np.shape(data_y)[3]))
@@ -34,6 +42,11 @@ def pad(data_x, data_y, image_size = 384):
     return padded_x, padded_y
 
 def crop_pad(data_x, data_y, image_size = 384):
+    """
+        # Arguments
+            data_x, data_y: tensor or numpy array
+        :param crop data if input data is too large to enforce that input data equally sized (384x384 pixels)
+        """
     if np.shape(data_x)[2] > image_size:#512:
         x = random.randint(0, data_x.shape[2] - image_size)
         data_x = data_x[:, :, x:x + image_size, :]
@@ -61,7 +74,6 @@ def un_pad_cut(data, input_shape):
 def get_min_max(data_path, folder_name, image_files):
     '''
     This function gets the minimum and maximum pixel values for the folder
-    
     Args:
         data_path (str): path to project folder
         folder_name (str): one of the data folder names, e.g. image or groundtruth

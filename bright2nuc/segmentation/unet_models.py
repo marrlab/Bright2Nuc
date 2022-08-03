@@ -1,5 +1,5 @@
 '''
-InstantDL
+Bright2Nuc
 2D and 3D UNet models
 Written by Dominik Waibel
 The original publication is: arXiv:1505.04597

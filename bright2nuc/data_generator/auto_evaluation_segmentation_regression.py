@@ -21,7 +21,8 @@ import datetime
 
 def threshold(img):
     """
-    #TODO
+    # Arguments
+        img: tensor or numpy array
     :param img (tensor): image to be thresholded
     """
     img[img < np.mean(img)] = 0.
@@ -29,7 +30,8 @@ def threshold(img):
 
 def binarize(data):
     """
-    #TODO
+    # Arguments
+        data: tensor or numpy array
     :param data: data to be binarized
     """
     threshold = filters.threshold_otsu(data)
@@ -39,6 +41,8 @@ def binarize(data):
 
 def normalize(data):
 	'''
+    # Arguments
+        data: tensor or numpy array
 	:param data: data to be normalized 0
 	:return: normalize data between 0 and 1
 	'''
@@ -48,10 +52,10 @@ def normalize(data):
 	data = np.nan_to_num(data)
 	return data
 
-def auc_(pred, gt):
+def auc_(gt, pred):
     '''
-    # TODO: order of the input
-    :param data: groundtruth and prediction
+    # Arguments
+        gt, pred: tensor or numpy array
     :return: Area under curve
     '''
     ground_truth_labels = gt.flatten() # we want to make them into vectors
@@ -62,8 +66,8 @@ def auc_(pred, gt):
 
 def getPearson(gt, pred):
     '''
-    # TODO: order of the input
-    :param data: groundtruth and prediction
+    # Arguments
+        gt, pred: tensor or numpy array
     :return: pearson correlation
     '''
     pearson_all = [np.zeros(np.shape(gt)[0])]
@@ -76,6 +80,15 @@ def getPearson(gt, pred):
     return pearson, pearson_all
 
 def save_2Dimages(data, names, z_index, path_name, image_name):
+    '''
+    # Arguments
+        data: the image files as array
+        names: the subplots desired (image, groundtruth, errormap)
+        z_index: the z index of a 3D image that is plotted
+        path_name: path where the image is saved
+        image_name: file names
+    :return: save 2D images to path
+    '''
     logging.info("plot len data")
     logging.info(len(data))
     plt.figure(figsize = (len(data)*8,10))
@@ -130,6 +143,15 @@ def save_2Dimages(data, names, z_index, path_name, image_name):
 
 
 def save_3Dimages(data, names, z_index, path_name, image_name):
+    '''
+    # Arguments
+        data: the image files as array
+        names: the subplots desired (image, groundtruth, errormap)
+        z_index: the z index of a 3D image that is plotted
+        path_name: path where the image is saved
+        image_name: file names
+    :return: save 3D images to path
+    '''
     plt.figure(figsize=(len(data) * 8, 12))
     logging.info("plot len data", len(data))
     grid = plt.GridSpec(5, len(data), height_ratios=[0.01, 0.3, 0.1, 0.02, 0.01], width_ratios=len(data) * [1])
@@ -214,18 +236,13 @@ def save_3Dimages(data, names, z_index, path_name, image_name):
 
 
 def quantitative_evaluation(path, data, names):
-    """
-    #TODO: documentation and correction of the commented codes
-    """
-    # groundtruth_norm = (data[names.index("groundtruth")] - np.min(data[names.index("groundtruth")])) / \
-    #                    (np.max(data[names.index("groundtruth")]) - np.min(data[names.index("groundtruth")]))
-    # prediction_norm = (data[names.index("prediction")] - np.min(data[names.index("prediction")])) / \
-    #                   (np.max(data[names.index("prediction")]) - np.min(data[names.index("prediction")]))
-    # rel_errormap_norm = np.abs(np.divide(data[names.index("abs_errormap")],
-    #                                      groundtruth_norm,
-    #                                      out=np.zeros_like(data[names.index("abs_errormap")]),
-    #                                      where=groundtruth_norm != 0))
-
+    '''
+    # Arguments
+        data: the image files as array
+        names: the subplots desired (image, groundtruth, errormap)
+        path: path where the image is saved
+    :return: write experiments quantitaitve metrics to a text file
+    '''
     groundtruth_binary = binarize(data[names.index("groundtruth")])
     prediction_binary = binarize(data[names.index("prediction")])
     # groundtruth_norm = normalize(data[names.index("groundtruth")])
@@ -247,7 +264,10 @@ def quantitative_evaluation(path, data, names):
 
 def visual_assesment(path, data, names):
     '''
-    #TODO: explain the inputs
+    # Arguments
+        data: the image files as array
+        names: the subplots desired (image, groundtruth, errormap)
+        path: path where the image is saved
     Function to execute image generation and saving
     '''
 
@@ -291,7 +311,8 @@ def visual_assesment(path, data, names):
 
 def segmentation_regression_evaluation(path):
     '''
-    #TODO: explain the inputs
+    # Arguments
+        path: path in which the exeriments data is saved and waiting for evaluation
     '''
     savepath = path + "/insights/"
     max_images = 200000

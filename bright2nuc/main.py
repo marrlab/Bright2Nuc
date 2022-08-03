@@ -1,5 +1,5 @@
 '''
-NucleiPredict
+Bright2Nuc
 Written by Dominik Waibel and Ali Boushehri
 
 In this file the functions are started to train and test the networks
